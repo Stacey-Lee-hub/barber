@@ -44,7 +44,10 @@ const sections = [
             If you choose “Any available barber”, we assign a barber who is free for the whole appointment and show
             their name on your confirmation.
           </li>
-          <li>We do not currently send confirmation emails. Please keep your booking reference.</li>
+          <li>
+            We email a confirmation with your appointment details and a calendar file to the address you provide. Your
+            booking stands even if the email does not arrive — please keep your booking reference.
+          </li>
         </ul>
       </>
     ),

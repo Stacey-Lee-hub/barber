@@ -14,6 +14,7 @@ Website and online booking for a premium barbershop in Cape Town (fictional busi
 - Double booking is prevented by a Postgres exclusion constraint, so two simultaneous requests cannot both succeed
 - The `CROWN15` first-visit code gives 15% off the Signature Crown Cut and the Executive Package only. It is checked against earlier bookings made with the same email address
 - Add to Google Calendar and a downloadable `.ics` file (Apple Calendar, Outlook), both generated from the confirmed booking record
+- A confirmation email is sent through Resend. It includes the same details as the calendar event, an Add to Google Calendar button and the `.ics` file attached. A failed email never cancels a booking; the confirmation screen says whether the email was sent
 - Customers can cancel online with their booking reference and email, which frees the slot
 - First-visit popup that can be dismissed, remembers the dismissal, traps keyboard focus and closes with Escape. The "View the Offer Popup" button in the homepage's first-visit section opens it at any time
 - Responsive from 320px to wide desktop, accessible forms and dialogs, and support for reduced motion
@@ -82,6 +83,14 @@ These frontend variables are public and are set in `.env.local` and on your host
 | `VITE_SUPABASE_URL` | `https://<project-ref>.supabase.co` |
 | `VITE_SUPABASE_ANON_KEY` | The project's anon / publishable key |
 
+These Edge Function secrets are server-side only. Set them with `npx supabase secrets set NAME=value`:
+
+| Name | Purpose |
+| --- | --- |
+| `RESEND_API_KEY` | Required to send confirmation emails |
+| `EMAIL_FROM` | Optional. Sender address, e.g. `The Crown & Razor Co. <bookings@yourdomain.com>`. It needs a domain verified in Resend; the default is Resend's test sender, which can only deliver to the Resend account owner's address |
+| `SITE_URL` | Optional. The public website URL, used for the "Cancel your booking online" link in the email |
+
 **Never** put the service-role key in a `VITE_` variable or anywhere in the frontend. Supabase injects `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` into deployed Edge Functions automatically, so no extra secrets need to be set. If you add a secret later, use `npx supabase secrets set NAME=value`; it is stored server-side only. `.env*` files other than `.env.example` are git-ignored.
 
 ## Deploying
@@ -111,4 +120,4 @@ JWT verification is turned off for these three functions in `supabase/config.tom
 - Barber portraits are SVG illustrations and are labelled as illustrative. They do not depict real people.
 - Photography comes from Unsplash (Unsplash licence) and is stored locally in `src/assets/images`.
 - Policies that the business has not yet confirmed are marked as drafts on the Terms and Privacy pages.
-- The site does not send confirmation emails, and the confirmation screen says so.
+- The only email the site sends is the booking confirmation. There is no marketing email.

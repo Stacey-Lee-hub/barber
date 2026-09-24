@@ -30,6 +30,7 @@ const sections = [
     body: (
       <ul>
         <li>To reserve your appointment and prevent double bookings</li>
+        <li>To email you a booking confirmation with your appointment details</li>
         <li>To contact you about your appointment if something changes</li>
         <li>To check eligibility for first-visit offers (by looking for earlier bookings with the same email)</li>
         <li>To let you cancel your own booking using your reference and email address</li>
@@ -65,10 +66,14 @@ const sections = [
     title: 'Sharing',
     body: (
       <>
-        <p>We do not sell your information or use it for advertising, and we do not send marketing emails.</p>
+        <p>
+          We do not sell your information or use it for advertising. The only email we send is your booking
+          confirmation — no marketing emails.
+        </p>
         <p>This website relies on a small number of service providers:</p>
         <ul>
           <li>Supabase — database and booking functions</li>
+          <li>Resend — delivers your booking confirmation email (your name, email and appointment details)</li>
           <li>Our website host — serves the pages and keeps standard server logs</li>
           <li>Google Fonts — delivers the typefaces used on the site</li>
           <li>

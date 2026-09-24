@@ -91,7 +91,17 @@ export default function Confirmation({ booking, onBookAnother }) {
           You’re booked, <em>{booking.customer.name.split(' ')[0]}.</em>
         </h2>
         <p className="muted">
-          Your appointment has been reserved. Please keep your booking reference — we don’t send confirmation emails.
+          {booking.email_sent ? (
+            <>
+              Your appointment has been reserved. A confirmation with these details and a calendar file has been sent
+              to <strong>{booking.customer.email}</strong>.
+            </>
+          ) : (
+            <>
+              Your appointment has been reserved. We couldn’t send a confirmation email this time, so please keep your
+              booking reference below.
+            </>
+          )}
         </p>
       </div>
 

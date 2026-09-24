@@ -8,6 +8,7 @@
 // the database trigger on appointments remains the final authority.
 import { createAdminClient, RELEASED_STATUS_FILTER } from '../_shared/admin.ts'
 import { errorResponse, json, readJsonRequest, SERVER_ERROR_MESSAGE } from '../_shared/http.js'
+import { sendBookingConfirmation } from '../_shared/mailer.ts'
 import {
   BUSINESS_TIMEZONE,
   calculateDiscountCents,
@@ -190,24 +191,25 @@ Deno.serve(async (req) => {
       }
 
       const durationMinutes = Math.round((new Date(appt.ends_at).getTime() - new Date(appt.starts_at).getTime()) / 60000)
-      return json(201, {
-        booking: {
-          id: appt.id,
-          status: appt.status,
-          timezone: BUSINESS_TIMEZONE,
-          service: { id: service.id, name: service.name },
-          barber: { id: barber.id, name: barber.name },
-          starts_at: appt.starts_at,
-          ends_at: appt.ends_at,
-          duration_minutes: durationMinutes,
-          original_price_cents: appt.original_price_cents,
-          discount_cents: appt.discount_cents,
-          final_price_cents: appt.final_price_cents,
-          promo_code: promo?.code ?? null,
-          customer: { name: customer.name, email: customer.email },
-          created_at: appt.created_at,
-        },
-      })
+      const booking = {
+        id: appt.id,
+        status: appt.status,
+        timezone: BUSINESS_TIMEZONE,
+        service: { id: service.id, name: service.name },
+        barber: { id: barber.id, name: barber.name },
+        starts_at: appt.starts_at,
+        ends_at: appt.ends_at,
+        duration_minutes: durationMinutes,
+        original_price_cents: appt.original_price_cents,
+        discount_cents: appt.discount_cents,
+        final_price_cents: appt.final_price_cents,
+        promo_code: promo?.code ?? null,
+        customer: { name: customer.name, email: customer.email },
+        created_at: appt.created_at,
+      }
+      // The appointment is already saved; a failed email is reported, never turned into a failed booking.
+      const emailSent = await sendBookingConfirmation(booking)
+      return json(201, { booking: { ...booking, email_sent: emailSent } })
     }
     throw new BookingError(409, 'slot_unavailable', CONFLICT_MESSAGE)
   } catch (err) {
