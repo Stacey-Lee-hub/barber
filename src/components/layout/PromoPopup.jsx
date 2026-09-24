@@ -5,6 +5,7 @@ import { X } from 'lucide-react'
 import { LogoMark } from '../ui/Logo'
 import { FIRST_VISIT_OFFER } from '../../data/business'
 import useFocusTrap from '../../hooks/useFocusTrap'
+import { OPEN_PROMO_EVENT } from '../../lib/promoPopup'
 
 const STORAGE_KEY = 'crown-razor:offer-dismissed-at'
 const SESSION_KEY = 'crown-razor:offer-shown'
@@ -72,6 +73,13 @@ export default function PromoPopup() {
       window.removeEventListener('scroll', onScroll)
     }
   }, [quiet, open])
+
+  // Manual opening (e.g. "View the offer" button) bypasses the timing and dismissal rules.
+  useEffect(() => {
+    const onOpen = () => setOpen(true)
+    window.addEventListener(OPEN_PROMO_EVENT, onOpen)
+    return () => window.removeEventListener(OPEN_PROMO_EVENT, onOpen)
+  }, [])
 
   const dismiss = useCallback(() => {
     remember()

@@ -4,14 +4,14 @@ import Reveal from '../components/ui/Reveal'
 import ButtonLink from '../components/ui/ButtonLink'
 import OpeningHours from '../components/layout/OpeningHours'
 import { LogoMark } from '../components/ui/Logo'
-import { BUSINESS } from '../data/business'
+import { ADDRESS_LINES, BUSINESS } from '../data/business'
 import useDocumentMeta from '../hooks/useDocumentMeta'
 
 /** Stylised, not-to-scale location graphic. The business is fictional, so no real map is embedded. */
 function LocationIllustration() {
   return (
     <figure className="location-art">
-      <svg viewBox="0 0 600 460" role="img" aria-label="Illustrative map showing the shop on Artisan Way">
+      <svg viewBox="0 0 600 460" role="img" aria-label="Illustrative map showing the shop on Bree Street, Cape Town">
         <rect width="600" height="460" fill="#29231e" />
         <g stroke="#b89b65" strokeOpacity="0.12">
           {Array.from({ length: 13 }, (_, i) => (
@@ -34,7 +34,7 @@ function LocationIllustration() {
         <rect x="200" y="0" width="20" height="460" fill="#171717" />
         <rect x="370" y="0" width="12" height="460" fill="#171717" />
         <text x="30" y="210" fill="#e7dfd2" fillOpacity="0.7" fontFamily="DM Sans, sans-serif" fontSize="13" letterSpacing="4">
-          ARTISAN WAY
+          BREE STREET
         </text>
         <g transform="translate(288 150)">
           <circle r="46" fill="#b89b65" fillOpacity="0.12" />
@@ -80,9 +80,11 @@ export default function Contact() {
               <address className="contact__value">
                 {BUSINESS.name}
                 <br />
-                {BUSINESS.address.street}
+                {ADDRESS_LINES[0]}
                 <br />
-                {BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}
+                {ADDRESS_LINES[1]}
+                <br />
+                {BUSINESS.address.country}
               </address>
             </div>
             <div className="contact__block">

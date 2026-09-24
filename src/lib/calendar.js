@@ -1,5 +1,6 @@
 import { BUSINESS, FULL_ADDRESS } from '../data/business'
-import { formatPrice, formatZoneAbbr, formatZonedDate, formatZonedTime } from './format'
+import { BUSINESS_TIMEZONE } from '@shared/schedule.js'
+import { formatPrice, formatZonedDate, formatZonedTime } from './format'
 
 // All calendar output is generated from the booking record returned by the server
 // (starts_at / ends_at are UTC instants), so events land at the shop's local time
@@ -18,7 +19,7 @@ export function eventDescription(booking) {
   const lines = [
     `Service: ${booking.service.name}`,
     `Barber: ${booking.barber.name}`,
-    `When: ${formatZonedDate(booking.starts_at)}, ${formatZonedTime(booking.starts_at)} – ${formatZonedTime(booking.ends_at)} ${formatZoneAbbr(booking.starts_at)}`,
+    `When: ${formatZonedDate(booking.starts_at)}, ${formatZonedTime(booking.starts_at)} – ${formatZonedTime(booking.ends_at)} ${BUSINESS.timezoneAbbr}`,
     `Duration: ${booking.duration_minutes} minutes`,
     `Total: ${formatPrice(booking.final_price_cents)}${booking.discount_cents > 0 ? ` (includes ${booking.promo_code} discount)` : ''}`,
     `Booking reference: ${booking.id}`,
@@ -37,7 +38,7 @@ export function googleCalendarUrl(booking) {
     dates: `${toCalendarUtc(booking.starts_at)}/${toCalendarUtc(booking.ends_at)}`,
     details: eventDescription(booking),
     location: FULL_ADDRESS,
-    ctz: booking.timezone || 'America/Los_Angeles',
+    ctz: booking.timezone || BUSINESS_TIMEZONE,
   })
   return `https://calendar.google.com/calendar/render?${params.toString()}`
 }

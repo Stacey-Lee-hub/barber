@@ -68,9 +68,9 @@ export default function Hero() {
           ))}
         </motion.ul>
 
-        <a href="#introduction" className="hero__scroll" aria-label="Scroll to introduction">
+        {/* <a href="#introduction" className="hero__scroll" aria-label="Scroll to introduction">
           <ArrowDown aria-hidden="true" />
-        </a>
+        </a> */}
       </div>
     </section>
   )

@@ -1,8 +1,9 @@
 import { BUSINESS_TIMEZONE, timeToMinutes } from '@shared/schedule.js'
 
+/** Cents → South African Rand, e.g. 4500 → 'R45', 6375 → 'R63.75'. */
 export function formatPrice(cents) {
-  const dollars = cents / 100
-  return `$${Number.isInteger(dollars) ? dollars : dollars.toFixed(2)}`
+  const rand = cents / 100
+  return `R${Number.isInteger(rand) ? rand : rand.toFixed(2)}`
 }
 
 export function formatDuration(minutes) {
@@ -26,7 +27,6 @@ export function formatClock(timeStr) {
 const zoned = (options) => new Intl.DateTimeFormat('en-US', { timeZone: BUSINESS_TIMEZONE, ...options })
 const longDate = zoned({ weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
 const clock = zoned({ hour: 'numeric', minute: '2-digit' })
-const zoneName = zoned({ timeZoneName: 'short' })
 
 /** Instant → 'Friday, October 2, 2026' in the shop's time zone. */
 export function formatZonedDate(iso) {
@@ -36,11 +36,6 @@ export function formatZonedDate(iso) {
 /** Instant → '3:00 PM' in the shop's time zone. */
 export function formatZonedTime(iso) {
   return clock.format(new Date(iso))
-}
-
-/** Instant → 'PDT' / 'PST'. */
-export function formatZoneAbbr(iso) {
-  return zoneName.formatToParts(new Date(iso)).find((p) => p.type === 'timeZoneName')?.value ?? 'PT'
 }
 
 /** 'YYYY-MM-DD' calendar date → 'Friday, October 2' (no zone shift). */

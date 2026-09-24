@@ -1,4 +1,5 @@
-import { Clock } from 'lucide-react'
+import { Clock, Sparkles } from 'lucide-react'
+import { openPromoPopup } from '../../lib/promoPopup'
 import Reveal, { RevealImage } from '../ui/Reveal'
 import ButtonLink, { TextLink } from '../ui/ButtonLink'
 import BarberTeaser from '../barbers/BarberTeaser'
@@ -174,9 +175,15 @@ export function FirstVisitOffer() {
             <span className="small-caps">Promo code</span>
             <strong>{FIRST_VISIT_OFFER.code}</strong>
           </div>
-          <ButtonLink to={`/booking?promo=${FIRST_VISIT_OFFER.code}`} variant="dark">
-            Claim Your Offer
-          </ButtonLink>
+          <div className="btn-row">
+            <ButtonLink to={`/booking?promo=${FIRST_VISIT_OFFER.code}`} variant="dark">
+              Claim Your Offer
+            </ButtonLink>
+            <button type="button" className="btn btn--outline" onClick={openPromoPopup} aria-haspopup="dialog">
+              <Sparkles aria-hidden="true" />
+              <span>View the Offer Popup</span>
+            </button>
+          </div>
           <p className="offer__fine">
             Valid on first visits only, checked against previous online bookings made with the same email address.
           </p>

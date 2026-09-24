@@ -6,11 +6,10 @@ import { downloadIcs, googleCalendarUrl } from '../../lib/calendar'
 import {
   formatDurationLong,
   formatPrice,
-  formatZoneAbbr,
   formatZonedDate,
   formatZonedTime,
 } from '../../lib/format'
-import { FULL_ADDRESS } from '../../data/business'
+import { BUSINESS, FULL_ADDRESS } from '../../data/business'
 
 const EASE = [0.22, 0.61, 0.36, 1]
 
@@ -72,7 +71,7 @@ export default function Confirmation({ booking, onBookAnother }) {
     ['Date', formatZonedDate(booking.starts_at)],
     [
       'Time',
-      `${formatZonedTime(booking.starts_at)} – ${formatZonedTime(booking.ends_at)} ${formatZoneAbbr(booking.starts_at)}`,
+      `${formatZonedTime(booking.starts_at)} – ${formatZonedTime(booking.ends_at)} ${BUSINESS.timezoneAbbr}`,
     ],
     ['Duration', formatDurationLong(booking.duration_minutes)],
     ['Location', FULL_ADDRESS],

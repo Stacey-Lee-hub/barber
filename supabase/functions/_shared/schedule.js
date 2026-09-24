@@ -1,7 +1,9 @@
 // Scheduling rules shared by the Supabase Edge Functions (Deno) and the React app (Vite).
 // Pure JavaScript with no runtime-specific APIs so both environments import the same logic.
 
-export const BUSINESS_TIMEZONE = 'America/Los_Angeles'
+// South African Standard Time (UTC+2, no daylight saving). The conversion helpers below
+// still handle DST correctly for any zone passed to them.
+export const BUSINESS_TIMEZONE = 'Africa/Johannesburg'
 export const SLOT_INTERVAL_MINUTES = 15
 export const BOOKING_HORIZON_DAYS = 60
 // Customers cannot book a chair that starts within this many minutes from now.
@@ -63,7 +65,7 @@ export function getZonedParts(date, timeZone = BUSINESS_TIMEZONE) {
   return parts
 }
 
-/** Minutes the zone is ahead of UTC at the given instant (e.g. -420 for PDT). */
+/** Minutes the zone is ahead of UTC at the given instant (e.g. 120 for SAST, -420 for PDT). */
 export function getTimeZoneOffsetMinutes(date, timeZone = BUSINESS_TIMEZONE) {
   const p = getZonedParts(date, timeZone)
   const asUtc = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second)

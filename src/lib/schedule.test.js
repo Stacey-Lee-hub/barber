@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  BUSINESS_TIMEZONE,
   buildDaySlots,
   calculateDiscountCents,
   dateInZone,
@@ -16,35 +17,36 @@ const sunday = { day_of_week: 0, opening_time: '10:00:00', closing_time: '16:00:
 // A "now" well before the dates under test.
 const NOW = new Date('2026-09-24T12:00:00Z')
 
-describe('time zone conversion (America/Los_Angeles)', () => {
-  it('converts PDT wall time to UTC (UTC-7)', () => {
-    expect(zonedDateTimeToUtc('2026-10-02', '15:00').toISOString()).toBe('2026-10-02T22:00:00.000Z')
+describe('time zone conversion (Africa/Johannesburg, SAST)', () => {
+  it('uses the shop time zone', () => {
+    expect(BUSINESS_TIMEZONE).toBe('Africa/Johannesburg')
   })
 
-  it('converts PST wall time to UTC (UTC-8)', () => {
-    expect(zonedDateTimeToUtc('2026-12-04', '15:00').toISOString()).toBe('2026-12-04T23:00:00.000Z')
+  it('converts SAST wall time to UTC (UTC+2)', () => {
+    expect(zonedDateTimeToUtc('2026-10-02', '15:00').toISOString()).toBe('2026-10-02T13:00:00.000Z')
   })
 
-  it('handles the day after DST ends (Nov 1 2026)', () => {
-    expect(zonedDateTimeToUtc('2026-10-31', '08:00').toISOString()).toBe('2026-10-31T15:00:00.000Z')
-    expect(zonedDateTimeToUtc('2026-11-02', '08:00').toISOString()).toBe('2026-11-02T16:00:00.000Z')
-  })
-
-  it('handles the day DST starts (Mar 8 2026)', () => {
-    expect(zonedDateTimeToUtc('2026-03-08', '10:00').toISOString()).toBe('2026-03-08T17:00:00.000Z')
-    expect(zonedDateTimeToUtc('2026-03-07', '10:00').toISOString()).toBe('2026-03-07T18:00:00.000Z')
+  it('stays UTC+2 all year — South Africa has no daylight saving', () => {
+    expect(zonedDateTimeToUtc('2026-01-15', '08:00').toISOString()).toBe('2026-01-15T06:00:00.000Z')
+    expect(zonedDateTimeToUtc('2026-07-15', '08:00').toISOString()).toBe('2026-07-15T06:00:00.000Z')
   })
 
   it('reports the shop calendar date, not the UTC date', () => {
-    // 2026-09-25 03:00 UTC is still the evening of the 24th in Los Angeles.
-    expect(dateInZone(new Date('2026-09-25T03:00:00Z'))).toBe('2026-09-24')
+    // 2026-09-24 23:00 UTC is already 01:00 on the 25th in Cape Town.
+    expect(dateInZone(new Date('2026-09-24T23:00:00Z'))).toBe('2026-09-25')
   })
 
-  it('computes 23- and 25-hour days around DST changes', () => {
-    const spring = dayBoundsUtc('2026-03-08')
-    const fall = dayBoundsUtc('2026-11-01')
-    expect((spring.end - spring.start) / 3600000).toBe(23)
-    expect((fall.end - fall.start) / 3600000).toBe(25)
+  it('has 24-hour days', () => {
+    const day = dayBoundsUtc('2026-10-02')
+    expect(day.start.toISOString()).toBe('2026-10-01T22:00:00.000Z')
+    expect((day.end - day.start) / 3600000).toBe(24)
+  })
+
+  it('still handles daylight saving correctly for zones that use it', () => {
+    const la = 'America/Los_Angeles'
+    expect(zonedDateTimeToUtc('2026-10-02', '15:00', la).toISOString()).toBe('2026-10-02T22:00:00.000Z') // PDT
+    expect(zonedDateTimeToUtc('2026-12-04', '15:00', la).toISOString()).toBe('2026-12-04T23:00:00.000Z') // PST
+    expect(zonedDateTimeToUtc('2026-03-08', '10:00', la).toISOString()).toBe('2026-03-08T17:00:00.000Z') // DST start day
   })
 
   it('maps dates to business_hours day_of_week (0 = Sunday)', () => {
@@ -57,13 +59,13 @@ describe('slot generation', () => {
   it('ends a 45-minute appointment at 3:45 PM when it starts at 3:00 PM', () => {
     const slots = buildDaySlots({ date: '2026-10-02', hours: weekday, durationMinutes: 45, now: NOW })
     const three = slots.find((s) => s.time === '15:00')
-    expect(three.starts_at).toBe('2026-10-02T22:00:00.000Z')
-    expect(three.ends_at).toBe('2026-10-02T22:45:00.000Z')
+    expect(three.starts_at).toBe('2026-10-02T13:00:00.000Z')
+    expect(three.ends_at).toBe('2026-10-02T13:45:00.000Z')
   })
 
   it('ends a 75-minute Executive Package at 4:15 PM when it starts at 3:00 PM', () => {
     const slots = buildDaySlots({ date: '2026-10-02', hours: weekday, durationMinutes: 75, now: NOW })
-    expect(slots.find((s) => s.time === '15:00').ends_at).toBe('2026-10-02T23:15:00.000Z')
+    expect(slots.find((s) => s.time === '15:00').ends_at).toBe('2026-10-02T14:15:00.000Z')
   })
 
   it('never lets an appointment run past closing', () => {
@@ -86,7 +88,7 @@ describe('slot generation', () => {
   })
 
   it('removes slots that overlap an existing booking but keeps back-to-back ones', () => {
-    const busy = [{ starts_at: '2026-10-02T22:00:00Z', ends_at: '2026-10-02T22:45:00Z' }] // 3:00–3:45 PM
+    const busy = [{ starts_at: '2026-10-02T13:00:00Z', ends_at: '2026-10-02T13:45:00Z' }] // 3:00–3:45 PM
     const times = buildDaySlots({ date: '2026-10-02', hours: weekday, durationMinutes: 45, busy, now: NOW }).map((s) => s.time)
     expect(times).not.toContain('14:30') // would end 3:15
     expect(times).not.toContain('15:00')
@@ -96,7 +98,7 @@ describe('slot generation', () => {
   })
 
   it('hides times in the past or within the minimum lead time', () => {
-    const now = new Date('2026-10-02T21:10:00Z') // 2:10 PM PDT
+    const now = new Date('2026-10-02T12:10:00Z') // 2:10 PM SAST
     const times = buildDaySlots({ date: '2026-10-02', hours: weekday, durationMinutes: 45, now }).map((s) => s.time)
     expect(times[0]).toBe('14:45') // 2:10 PM + 30 min lead → first quarter-hour at/after 2:40 PM
     expect(times).not.toContain('14:30')
@@ -109,7 +111,7 @@ describe('requested slot validation', () => {
   it('accepts a valid future slot', () => {
     const r = validateRequestedSlot({ ...base, date: '2026-10-02', time: '15:00' })
     expect(r.ok).toBe(true)
-    expect(r.end.toISOString()).toBe('2026-10-02T22:45:00.000Z')
+    expect(r.end.toISOString()).toBe('2026-10-02T13:45:00.000Z')
   })
 
   it('rejects past dates', () => {
@@ -117,7 +119,7 @@ describe('requested slot validation', () => {
   })
 
   it('rejects past times today', () => {
-    const now = new Date('2026-10-02T22:30:00Z')
+    const now = new Date('2026-10-02T12:45:00Z') // 2:45 PM SAST
     expect(validateRequestedSlot({ ...base, now, date: '2026-10-02', time: '15:00' }).code).toBe('past_time')
   })
 
@@ -151,7 +153,7 @@ describe('discounts', () => {
 })
 
 describe('customer validation', () => {
-  const valid = { name: 'Alex Morgan', email: 'alex@example.com', phone: '(555) 123-4567', notes: '' }
+  const valid = { name: 'Alex Morgan', email: 'alex@example.com', phone: '(021) 123 4567', notes: '' }
 
   it('accepts valid details', () => {
     expect(validateCustomer(valid)).toEqual({})
@@ -163,6 +165,6 @@ describe('customer validation', () => {
   })
 
   it('rejects phone numbers with letters', () => {
-    expect(validateCustomer({ ...valid, phone: '555-CALL-NOW' }).phone).toBeTruthy()
+    expect(validateCustomer({ ...valid, phone: '021-CALL-NOW' }).phone).toBeTruthy()
   })
 })

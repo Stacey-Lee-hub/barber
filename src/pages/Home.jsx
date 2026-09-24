@@ -13,7 +13,7 @@ import useDocumentMeta from '../hooks/useDocumentMeta'
 export default function Home() {
   useDocumentMeta(
     null,
-    'Premium grooming and classic barbering for the modern gentleman. Precision cuts, skin fades, beard sculpting and hot towel shaves in Downtown Metro, CA. Book online.',
+    'Premium grooming and classic barbering for the modern gentleman. Precision cuts, skin fades, beard sculpting and hot towel shaves in Cape Town City Centre. Book online.',
   )
 
   return (

@@ -7,18 +7,27 @@ export const BUSINESS = {
   tagline: 'Premium Grooming & Classic Barbering for the Modern Gentleman',
   established: 2018,
   address: {
-    street: '142 Artisan Way, Suite 102',
-    city: 'Downtown Metro',
-    region: 'CA',
-    postalCode: '90210',
+    street: '142 Bree Street, Suite 102',
+    suburb: 'Cape Town City Centre',
+    city: 'Cape Town',
+    postalCode: '8001',
+    country: 'South Africa',
   },
-  phone: { display: '(555) 019-2834', href: 'tel:+15550192834' },
+  phone: { display: '(021) 019 2834', href: 'tel:+27210192834' },
   email: 'contact@crownandrazor.com',
-  timezoneLabel: 'Pacific Time',
+  timezoneLabel: 'South African Standard Time (SAST)',
+  // South Africa does not observe daylight saving, so the abbreviation never changes.
+  timezoneAbbr: 'SAST',
+  currency: 'ZAR',
   domain: 'crownandrazor.com',
 }
 
-export const FULL_ADDRESS = `${BUSINESS.address.street}, ${BUSINESS.address.city}, ${BUSINESS.address.region} ${BUSINESS.address.postalCode}`
+const { address } = BUSINESS
+
+/** Address split for display: ['142 Bree Street, Suite 102', 'Cape Town City Centre, Cape Town, 8001'] */
+export const ADDRESS_LINES = [address.street, `${address.suburb}, ${address.city}, ${address.postalCode}`]
+
+export const FULL_ADDRESS = `${ADDRESS_LINES.join(', ')}, ${address.country}`
 
 export const FIRST_VISIT_OFFER = {
   code: 'CROWN15',

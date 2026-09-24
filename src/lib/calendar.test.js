@@ -5,11 +5,11 @@ import { groupBusinessHours } from './hours'
 // Shape returned by the create-booking Edge Function.
 const booking = {
   id: '3f1c2d4e-5a6b-4c7d-8e9f-0a1b2c3d4e5f',
-  timezone: 'America/Los_Angeles',
+  timezone: 'Africa/Johannesburg',
   service: { id: 's1', name: 'The Executive Package' },
   barber: { id: 'b1', name: 'Marcus "Blade" Vance' },
-  starts_at: '2026-10-02T22:00:00+00:00', // 3:00 PM PDT
-  ends_at: '2026-10-02T23:15:00+00:00', // 4:15 PM PDT
+  starts_at: '2026-10-02T13:00:00+00:00', // 3:00 PM SAST
+  ends_at: '2026-10-02T14:15:00+00:00', // 4:15 PM SAST
   duration_minutes: 75,
   original_price_cents: 7500,
   discount_cents: 1125,
@@ -21,17 +21,17 @@ describe('Google Calendar link', () => {
   const url = new URL(googleCalendarUrl(booking))
 
   it('uses the confirmed start and end instants in UTC', () => {
-    expect(url.searchParams.get('dates')).toBe('20261002T220000Z/20261002T231500Z')
+    expect(url.searchParams.get('dates')).toBe('20261002T130000Z/20261002T141500Z')
   })
 
   it('includes title, location, shop time zone and booking details', () => {
     expect(url.searchParams.get('text')).toBe('The Crown & Razor Co. — The Executive Package')
-    expect(url.searchParams.get('location')).toBe('142 Artisan Way, Suite 102, Downtown Metro, CA 90210')
-    expect(url.searchParams.get('ctz')).toBe('America/Los_Angeles')
+    expect(url.searchParams.get('location')).toBe('142 Bree Street, Suite 102, Cape Town City Centre, Cape Town, 8001, South Africa')
+    expect(url.searchParams.get('ctz')).toBe('Africa/Johannesburg')
     const details = url.searchParams.get('details')
     expect(details).toContain('Barber: Marcus "Blade" Vance')
-    expect(details).toContain('3:00 PM – 4:15 PM PDT')
-    expect(details).toContain('(555) 019-2834')
+    expect(details).toContain('3:00 PM – 4:15 PM SAST')
+    expect(details).toContain('(021) 019 2834')
   })
 })
 
@@ -47,14 +47,16 @@ describe('ICS file', () => {
   })
 
   it('has the confirmed start, end, a stable UID and timestamp', () => {
-    expect(unfolded).toContain('DTSTART:20261002T220000Z')
-    expect(unfolded).toContain('DTEND:20261002T231500Z')
+    expect(unfolded).toContain('DTSTART:20261002T130000Z')
+    expect(unfolded).toContain('DTEND:20261002T141500Z')
     expect(unfolded).toContain(`UID:${booking.id}@crownandrazor.com`)
     expect(unfolded).toContain('DTSTAMP:20260924T120000Z')
   })
 
   it('escapes commas and semicolons in text fields', () => {
-    expect(unfolded).toContain('LOCATION:142 Artisan Way\\, Suite 102\\, Downtown Metro\\, CA 90210')
+    expect(unfolded).toContain(
+      'LOCATION:142 Bree Street\\, Suite 102\\, Cape Town City Centre\\, Cape Town\\, 8001\\, South Africa',
+    )
     expect(unfolded).toContain('SUMMARY:The Crown & Razor Co. — The Executive Package')
   })
 

@@ -3,7 +3,7 @@ import { Mail, MapPin, Phone } from 'lucide-react'
 import Logo from '../ui/Logo'
 import ButtonLink from '../ui/ButtonLink'
 import OpeningHours from './OpeningHours'
-import { BUSINESS, NAV_LINKS } from '../../data/business'
+import { ADDRESS_LINES, BUSINESS, NAV_LINKS } from '../../data/business'
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -52,9 +52,9 @@ export default function Footer() {
               <span>
                 <MapPin aria-hidden="true" />
                 <span>
-                  {BUSINESS.address.street}
+                  {ADDRESS_LINES[0]}
                   <br />
-                  {BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}
+                  {ADDRESS_LINES[1]}
                 </span>
               </span>
               <a href={BUSINESS.phone.href}>
@@ -76,9 +76,14 @@ export default function Footer() {
         </div>
 
         <div className="site-footer__bottom">
-          <p>
-            © {year} {BUSINESS.name} All rights reserved.
-          </p>
+          <div className="site-footer__legal">
+            <p>
+              © {year} {BUSINESS.name} All rights reserved.
+            </p>
+            <p className="site-footer__credit">
+              Designed &amp; developed by <span>Stacey-Lee Pietersen</span>
+            </p>
+          </div>
           <ul>
             <li>
               <Link to="/terms">Terms &amp; Conditions</Link>

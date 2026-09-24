@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import LegalPage, { DraftNote } from '../components/ui/LegalPage'
-import { BUSINESS, FIRST_VISIT_OFFER } from '../data/business'
+import { BUSINESS, FIRST_VISIT_OFFER, FULL_ADDRESS } from '../data/business'
 import { BOOKING_HORIZON_DAYS, MIN_LEAD_MINUTES } from '@shared/schedule.js'
 import useDocumentMeta from '../hooks/useDocumentMeta'
 
@@ -105,7 +105,7 @@ const sections = [
     body: (
       <>
         <p>
-          Prices are shown in US dollars on our <Link to="/services">Services</Link> page and during booking. The price,
+          Prices are shown in South African Rand (ZAR) on our <Link to="/services">Services</Link> page and during booking. The price,
           any discount and the total shown on the review screen are recorded with your booking when you confirm.
         </p>
         <p>Payment is made at the shop. Additional services requested on the day are priced separately.</p>
@@ -148,8 +148,7 @@ const sections = [
     title: 'Contact us',
     body: (
       <p>
-        {BUSINESS.name}, {BUSINESS.address.street}, {BUSINESS.address.city}, {BUSINESS.address.region}{' '}
-        {BUSINESS.address.postalCode}
+        {BUSINESS.name}, {FULL_ADDRESS}
         <br />
         Phone: <a href={BUSINESS.phone.href}>{BUSINESS.phone.display}</a> · Email:{' '}
         <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>

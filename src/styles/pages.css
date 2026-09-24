@@ -149,7 +149,7 @@
   }
 
   .hero__pillars {
-    left: calc(var(--gutter) + 3.75rem);
+    left: var(--gutter);
     right: auto;
     gap: 0.9rem;
     font-size: 0.6rem;

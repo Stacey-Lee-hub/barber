@@ -1,6 +1,6 @@
 # The Crown & Razor Co.
 
-Website and online booking for a premium barbershop (fictional business), built for the Talent Forge Junior Full-Stack Developer Practical Assessment.
+Website and online booking for a premium barbershop in Cape Town (fictional business), built by **Stacey-Lee Pietersen** for the Talent Forge Junior Full-Stack Developer Practical Assessment.
 
 **Stack:** React 19 · Vite · React Router · Motion · Lucide · Supabase (Postgres + Edge Functions) · Vitest
 
@@ -9,12 +9,13 @@ Website and online booking for a premium barbershop (fictional business), built 
 - Pages: Home, Services, About, Our Barbers, Contact, Booking, Cancel a Booking, Terms, Privacy, and a custom 404 page
 - Services, prices, durations, barbers and opening hours are loaded live from Supabase
 - Booking in five steps: service → barber (or any available barber) → date and time → details → review → confirmation
-- Available times are calculated server-side in `America/Los_Angeles`. The calculation accounts for daylight saving time, opening hours, service length, existing bookings and a 30-minute minimum notice
+- The business is located in Cape Town. Prices are shown in South African Rand (ZAR), and times are in South African Standard Time (SAST, `Africa/Johannesburg`)
+- Available times are calculated server-side from opening hours, service length, existing bookings and a 30-minute minimum notice. The time conversion also handles daylight saving time for zones that use it
 - Double booking is prevented by a Postgres exclusion constraint, so two simultaneous requests cannot both succeed
 - The `CROWN15` first-visit code gives 15% off the Signature Crown Cut and the Executive Package only. It is checked against earlier bookings made with the same email address
 - Add to Google Calendar and a downloadable `.ics` file (Apple Calendar, Outlook), both generated from the confirmed booking record
 - Customers can cancel online with their booking reference and email, which frees the slot
-- First-visit popup that can be dismissed, remembers the dismissal, traps keyboard focus and closes with Escape
+- First-visit popup that can be dismissed, remembers the dismissal, traps keyboard focus and closes with Escape. The "View the Offer Popup" button in the homepage's first-visit section opens it at any time
 - Responsive from 320px to wide desktop, accessible forms and dialogs, and support for reduced motion
 
 ## Project structure
@@ -30,6 +31,7 @@ src/
   styles/      base, layout, components, pages, booking
 supabase/
   config.toml
+  migrations/     SAST time zone for the validate_appointment trigger
   functions/
     _shared/          schedule.js + validation.js (also imported by the React app via @shared)
     get-availability/ available start times for a service/barber/date

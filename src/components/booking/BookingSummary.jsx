@@ -1,5 +1,6 @@
 import { formatCalendarDate, formatClock, formatDurationLong, formatPrice, formatZonedTime } from '../../lib/format'
 import { ANY_BARBER, isPromoVerified } from '../../lib/bookingFlow'
+import { BUSINESS } from '../../data/business'
 
 function summaryPricing(state, service) {
   const promo = isPromoVerified(state) ? state.appliedPromo : null
@@ -52,7 +53,7 @@ export default function BookingSummary({ state, service, barber, variant = 'asid
           </div>
         </dl>
       )}
-      <p className="summary__note">Pay at the shop. Times in Pacific Time.</p>
+      <p className="summary__note">Pay at the shop. Prices in Rand (ZAR). Times in {BUSINESS.timezoneLabel}.</p>
     </section>
   )
 }
