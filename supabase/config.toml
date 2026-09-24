@@ -1,0 +1,12 @@
+project_id = "wmkbilltchfkshkntkoo"
+
+# These endpoints are public by design (guests book without an account).
+# Each function validates its own input and uses the service-role key server-side only.
+[functions.get-availability]
+verify_jwt = false
+
+[functions.create-booking]
+verify_jwt = false
+
+[functions.cancel-booking]
+verify_jwt = false
